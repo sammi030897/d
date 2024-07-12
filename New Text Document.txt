@@ -1,0 +1,377 @@
+package com.app.core;
+
+public class Node {
+
+	Node prev;
+	int data;
+	Node next;
+
+	public Node(int data) {
+		this.data = data;
+		this.prev =this.next = null;
+	}
+
+}
+package com.app.core;
+
+import java.util.Scanner;
+
+public class Main {
+	public static void main(String[] args) {
+		DoubleLinkedList list = new DoubleLinkedList();
+		Scanner scanner = new Scanner(System.in);
+		int choice, data, position;
+		// Populate the list with sample data
+        list.addFirst(10);
+        list.addFirst(20);
+        list.addLast(30);
+        list.addLast(40);
+        list.insertAtPosition(25, 2);
+		while (true) {
+			System.out.println("\nMenu:");
+			System.out.println("1. Add First");
+			System.out.println("2. Add Last");
+			System.out.println("3. Insert at Position");
+			System.out.println("4. Delete First");
+			System.out.println("5. Delete Last");
+			System.out.println("6. Delete at Position");
+			System.out.println("7. Print List");
+			System.out.println("8. Sort List");
+			System.out.println("9. Remove Duplicates");
+			System.out.println("10. Count Elements");
+			System.out.println("11. Search Data");
+			System.out.println("12. Exit");
+
+			System.out.print("Enter your choice: ");
+			choice = scanner.nextInt();
+
+			switch (choice) {
+			case 1:
+				System.out.print("Enter data to add at first: ");
+				data = scanner.nextInt();
+				list.addFirst(data);
+				break;
+			case 2:
+				System.out.print("Enter data to add at last: ");
+				data = scanner.nextInt();
+				list.addLast(data);
+				break;
+			case 3:
+				System.out.print("Enter data to insert: ");
+				data = scanner.nextInt();
+				System.out.print("Enter position: ");
+				position = scanner.nextInt();
+				int result = list.insertAtPosition(data, position);
+				if (result == -1) {
+					System.out.println("Position does not exist");
+				} else {
+					System.out.println("Data inserted at position " + position);
+				}
+				break;
+			case 4:
+				list.deleteFirst();
+				break;
+			case 5:
+				list.deleteLast();
+				break;
+			case 6:
+				System.out.print("Enter position to delete: ");
+				position = scanner.nextInt();
+				list.deleteAtPosition(position);
+				break;
+			case 7:
+				list.printList();
+				break;
+			case 8:
+				list.sort();
+				System.out.println("List sorted.");
+				break;
+			case 9:
+				list.removeDuplicates();
+				System.out.println("Duplicates removed.");
+				break;
+			case 10:
+				System.out.println("Number of elements: " + list.count());
+				break;
+			case 11:
+				System.out.print("Enter data to search: ");
+				data = scanner.nextInt();
+				boolean isFound = list.search(data);
+				if (isFound) {
+					System.out.println("Element " + data + " found in the list.");
+				} else {
+					System.out.println("Element " + data + " not found in the list.");
+				}
+				break;
+			case 12:
+				System.out.println("Exiting...");
+				scanner.close();
+				System.exit(0);
+			default:
+				System.out.println("Invalid choice! Please try again.");
+			}
+		}
+	}
+}
+package com.app.core;
+
+public class DoubleLinkedList {
+	private Node head;
+	private int size;
+
+	public DoubleLinkedList() {
+		this.size = 0;
+	}
+
+	public void addFirst(int data) {
+		Node newNode = new Node(data);
+		size++;
+		if (head == null) {
+			head = newNode;
+			return;
+		}
+		newNode.next=head;
+		head.prev=newNode;
+		head = newNode;
+	}
+
+	public void addLast(int data) {
+		Node newNode = new Node(data);
+		size++;
+		if (head == null) {
+			head = newNode;
+			return;
+		}
+		Node currHead=head;
+		while(currHead.next!=null) {
+			currHead=currHead.next;
+		}
+		currHead.next=newNode;
+		newNode.prev=currHead;
+	}
+	
+	public void printList() {
+		if(head==null) {
+			System.out.println("list is empty");
+			return;
+		}
+		System.out.print("null<->");
+		Node currHead=head;
+		while(currHead!=null) {
+			System.out.print(currHead.data+"<->");
+			currHead=currHead.next;
+		}
+		System.out.println("null");
+	}
+	
+	public int insertAtPosition(int data, int position) {
+        if (position <= 0 || position > size + 1) {
+            System.out.println("Position does not exist");
+            return -1;
+        }
+
+        Node newNode = new Node(data);
+        if (position == 1) {
+            newNode.next = head;
+            if (head != null) {
+                head.prev = newNode;
+            }
+            head = newNode;
+            size++;
+            return data;
+        }
+
+        Node temp = head;
+        for (int i = 1; i < position - 1 && temp != null; i++) {
+            temp = temp.next;
+        }
+
+        if (temp == null) {
+            return -1;
+        }
+
+        newNode.next = temp.next;
+        if (temp.next != null) {
+            temp.next.prev = newNode;
+        }
+        temp.next = newNode;
+        newNode.prev = temp;
+        size++;
+        return data;
+    }
+
+	 public void deleteFirst() {
+	        if (head == null) {
+	            System.out.println("The list is empty");
+	            return;
+	        }
+	        size--;
+	        if (head.next == null) {
+	            head = null;
+	            return;
+	        }
+	        head = head.next;
+	        head.prev = null;
+	    }
+	 public void deleteLast() {
+	        if (head == null) {
+	            System.out.println("The list is empty");
+	            return;
+	        }
+	        size--;
+	        if (head.next == null) {
+	            head = null;
+	            return;
+	        }
+	        Node currHead = head;
+	        while (currHead.next != null) {
+	            currHead = currHead.next;
+	        }
+	        currHead.prev.next = null;
+	    }
+
+	    public void deleteAtPosition(int position) {
+	        if (position < 1 || position > size) {
+	            System.out.println("Invalid position");
+	            return;
+	        }
+
+	        if (position == 1) {
+	            deleteFirst();
+	            return;
+	        }
+
+	        if (position == size) {
+	            deleteLast();
+	            return;
+	        }
+
+	        Node temp = head;
+	        for (int i = 1; i < position && temp != null; i++) {
+	            temp = temp.next;
+	        }
+
+	        if (temp == null) {
+	            return;
+	        }
+
+	        temp.prev.next = temp.next;
+	        temp.next.prev = temp.prev;
+	        size--;
+	    }
+	  public void sort() {
+	        if (head == null || head.next == null) {
+	            return;
+	        }
+
+	        boolean swapped;
+	        do {
+	            Node current = head;
+	            swapped = false;
+	            while (current.next != null) {
+	                if (current.data > current.next.data) {
+	                    int temp = current.data;
+	                    current.data = current.next.data;
+	                    current.next.data = temp;
+	                    swapped = true;
+	                }
+	                current = current.next;
+	            }
+	        } while (swapped);
+	    }
+
+	    public int count() {
+	        return size;
+	    }
+//	    public void removeDuplicates() {
+//	        if (head == null || head.next == null) {
+//	            return;
+//	        }
+//
+//	        Node current = head;
+//
+//	        while (current != null) {
+//	            Node runner = current;
+//	            while (runner.next != null) {
+//	                if (runner.next.data == current.data) {
+//	                    deleteNode(runner.next);
+//	                } else {
+//	                    runner = runner.next;
+//	                }
+//	            }
+//	            current = current.next;
+//	        }
+//	    }
+//	    private void deleteNode(Node node) {
+//	        if (node == null) {
+//	            return;
+//	        }
+//
+//	        // If the node to be deleted is the head node
+//	        if (node == head) {
+//	            head = node.next;
+//	        }
+//
+//	        // Adjust the prev pointer of the next node if it exists
+//	        if (node.next != null) {
+//	            node.next.prev = node.prev;
+//	        }
+//
+//	        // Adjust the next pointer of the previous node if it exists
+//	        if (node.prev != null) {
+//	            node.prev.next = node.next;
+//	        }
+//
+//	        // Decrement the size of the list
+//	        size--;
+//	    }
+	    
+	    // Search method to find data in the list
+	    public boolean search(int data) {
+	        Node current = head;
+	        while (current != null) {
+	            if (current.data == data) {
+	                return true;
+	            }
+	            current = current.next;
+	        }
+	        return false;
+	    }
+	    
+	    public void removeDuplicates() {
+	        if (head == null || head.next == null) {
+	            return;
+	        }
+
+	        Node current = head;
+
+	        while (current != null) {
+	            Node runner = current;
+	            while (runner.next != null) {
+	                if (runner.next.data == current.data) {
+	                    Node nodeToDelete = runner.next;
+
+	                    // Adjust the pointers to delete the node
+	                    runner.next = nodeToDelete.next;
+	                    if (nodeToDelete.next != null) {
+	                        nodeToDelete.next.prev = nodeToDelete.prev;
+	                    }
+
+	                    // If the node to be deleted is the head node
+	                    if (nodeToDelete == head) {
+	                        head = nodeToDelete.next;
+	                    }
+
+	                    // Decrement the size of the list
+	                    size--;
+	                } else {
+	                    runner = runner.next;
+	                }
+	            }
+	            current = current.next;
+	        }
+	    }
+
+
+
+}
